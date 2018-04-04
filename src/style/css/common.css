@@ -1,0 +1,64 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+li{
+    list-style: none;
+}
+/* 卡密充值页面 */
+#Recharge .van-cell-group .van-cell{
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 42px;
+}
+#Recharge .top .van-cell-group .van-cell.van-field .van-cell__value .van-field__control{
+    height: 30px;
+    line-height: 30px;
+    margin-top: 7px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    padding-left: 10px;
+}
+#Recharge .top .van-cell-group .van-cell .van-field__icon{
+    right: 8px;
+}
+#Recharge .top .van-cell-group .van-cell.van-field .van-cell__title{
+    min-width: 1.266667rem;
+    width: 1.6rem;
+}
+#Recharge .top .van-hairline--top-bottom::after{
+    border-width: 0;
+}
+
+#Recharge .van-cell:not(:last-child)::after{
+    border-bottom-width: 0; 
+}
+
+#Recharge .input .van-cell-group .van-cell.van-field .van-cell__value .van-field__control{
+    height: 30px;
+    line-height: 30px;
+    margin-top: 7px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    padding-left: 10px;
+}
+#Recharge .input .van-cell-group .van-cell .van-field__icon{
+    right: 8px;
+}
+#Recharge .input .van-cell-group .van-cell.van-field .van-cell__title{
+    min-width: 1.266667rem;
+    width: 1.6rem;
+}
+#Recharge .input .van-hairline--top-bottom::after{
+    border-width: 0;
+}
+.van-checkbox--checked{
+    border-color: #a062e0;
+    background-color: #a062e0;
+}
+.van-radio .van-icon-checked{
+    color: #a062e0;
+}
+input.van-field__control:focus { 
+  border-color: #a062e0 !important;
+}
