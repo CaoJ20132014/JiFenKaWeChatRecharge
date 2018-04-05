@@ -24,7 +24,7 @@ li{
 }
 #Recharge .top .van-cell-group .van-cell.van-field .van-cell__title{
     min-width: 1.266667rem;
-    width: 1.6rem;
+    width: 60px;
 }
 #Recharge .top .van-hairline--top-bottom::after{
     border-width: 0;
@@ -47,7 +47,7 @@ li{
 }
 #Recharge .input .van-cell-group .van-cell.van-field .van-cell__title{
     min-width: 1.266667rem;
-    width: 1.6rem;
+    width: 60px;
 }
 #Recharge .input .van-hairline--top-bottom::after{
     border-width: 0;
@@ -61,4 +61,10 @@ li{
 }
 input.van-field__control:focus { 
   border-color: #a062e0 !important;
+}
+#Recharge.Code .input .van-cell-group .van-cell.van-field .van-cell__value .van-field__control{
+    text-align: center;
+}
+.Code .van-field__icon{
+    top: 60%;
 }

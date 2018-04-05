@@ -13,6 +13,7 @@
 <style scoped>
 	#App{
 		width: 10rem;
+		height: 100%;
 		background-color: #f4f4f4;
 		padding-top: .2rem;
 	}
