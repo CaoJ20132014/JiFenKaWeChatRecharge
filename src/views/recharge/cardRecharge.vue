@@ -7,9 +7,8 @@
 			</van-cell-group>
 		</div>
 		<div class="notice">
-			<p v-if="info.notice == '1'">提示：您的集分卡面值为<span v-text="info.worth"></span>元的<span v-text="info.type"></span>卡</p>
-			<p v-else-if="info.notice == '2'">提示：卡号有误，请重新输入</p>
-			<p v-else-if="info.notice == '3'">提示：卡密有误，请重新输入</p>
+			<p v-if="info.notice == '1'">提示：您的集分卡是面值为<span v-text="info.worth"></span>元的<span v-text="info.type"></span></p>
+			<p v-else-if="info.notice == '2'">提示：{{info.noticeText}}</p>
 		</div>
 		<div class="input-notice-btn" v-show="inputShow">
 			<div class="input">
@@ -19,7 +18,7 @@
 					<van-field v-model="info.tel" :maxLength="11" label="手机号：" icon="close" placeholder="请输入手机号" @click-icon="info.tel = ''" />
 					<p v-if="info.choose == 'fuel'">请注意：请仔细核对加油卡卡号，一旦充错不能退回。</p>
 					<p v-if="info.choose == 'fuel'">只能对主卡进行充值，充值副卡将会导致失败。</p>
-					<van-field v-if="info.choose == 'fuel'" v-model="info.fuelCard" label="加油卡：" icon="close" placeholder="请输入加油卡" @click-icon="info.fuelCard = ''" />
+					<van-field v-if="info.choose == 'fuel'" v-model="info.fuelCard" :maxLength="19" label="加油卡：" icon="close" placeholder="请输入加油卡" @click-icon="info.fuelCard = ''" />
 					<p v-if="info.choose == 'fuel'">温馨提示：受理成功48小时候后，请至加油站圈存使用。</p>
 				</van-cell-group>
 			</div>
@@ -27,7 +26,7 @@
 				<van-checkbox v-model="info.checked">我已阅读并同意</van-checkbox>
 				<span style="color: #a062e0;" @click="Read">《充值协议》</span>
 			</div>
-			<van-button :class="info.checked ? 'bg' : ''" size="large">确定</van-button>
+			<van-button :class="info.checked ? 'bg' : ''" :disabled="info.checked ? false : true" size="large" @click="ConfirmInfo">确定</van-button>
 		</div>
 		<div v-show="maskShow" class="mask"></div>
 		<transition name="van-fade">
@@ -48,7 +47,7 @@
 						<p>卡号：</p>
 						<p v-text="info.card"></p>
 					</div>
-					<div class="common">
+					<div class="common" v-if="info.choose == 'fuel'">
 						<p>姓名：</p>
 						<p v-text="info.name"></p>
 					</div>
@@ -106,39 +105,78 @@
 				<p class="alert-bot" @click="Agree">同意</p>
 			</div>
 		</transition>
+		<transition name="van-fade">
+			<div v-show="error_alert" class="error-alert">
+				<p class="alert-top">提示信息</p>
+				<div class="alert-con">
+					<p v-text="error_text"></p>
+				</div>
+				<p class="alert-bot" @click="error_alert=false,maskShow=false,GoRecord">确定</p>
+			</div>
+		</transition>
+		<transition name="van-fade">
+			<div v-show="finish_alert" class="finish-alert">
+				<p class="alert-top">提示信息</p>
+				<div class="alert-con">
+					<p v-text="finish_text"></p>
+				</div>
+				<p class="alert-bot" @click="finish_alert=false,maskShow=false,GoRecord">确定</p>
+			</div>
+		</transition>
   	</div>
 </template>
 <script>
+	import { CardValidate, CardRecharge } from '@/until/http/request';
+	import { checkType } from '@/until/validate/validate';
 	export default {
 		data() {
 			return {
 				info: {
 					card: '',			// 充值卡卡号
 					pwd: '',			// 充值卡密码
-					worth: '100',		// 充值卡面值
-					type: '通用',		// 充值卡类型，通用、话费、油卡
+					worth: '',			// 充值卡面值
+					type: '',			// 充值卡类型，通用、话费、油卡
 					name: '',			// 用户姓名
 					tel: '',			// 用户手机号码
 					fuelCard: '',		// 加油卡卡号
 					checked: '',		// 是否阅读充值协议
-					// active: false,		// 确认按钮背景颜色、是否禁用
 					choose: 'bill',		// 用户选择充值类型，bill话费，fuel油卡
-					notice: '1'			// 1正确，2卡号错误，3密码错误
+					noticeText: '',		// 提示信息
+					notice: ''			// 1正确，2错误信息
 				},
 				inputType: 'password',
 				icon: 'password-not-view',
-				choose_alert: false,
-				recharge_alert: false,
-				maskShow: false,
-				inputShow: false,
-				rules_alert: false
+				choose_alert: false,	// 选择充值类型的弹框
+				recharge_alert: false,	// 充值信息确认的弹框
+				maskShow: false,		// 蒙版
+				inputShow: false,		// 显示下面的信息输入框
+				error_alert: false,		// 错误信息提示框
+				error_text: '',			// 错误信息
+				finish_alert: '',		// 充值完成弹框
+				finish_text: '',		// 充值完成信息
+				rules_alert: false		// 充值规则弹框
 			}
 		},
 		watch: {
+			"info.card"() {
+				this.info.pwd = "";
+				if (this.info.card == 13) {
+					if (!/^\d{13,}$/.test(this.info.card)) {
+						this.info.notice = '2';		// 卡号错误
+					}
+				}
+			},
 			"info.pwd"() {
 				if(this.info.pwd.length == 8) {
-					this.maskShow = true;
-					this.choose_alert = true;
+					if (checkType(this.info.pwd, "number")) {
+						let data = {
+							number: this.info.card,
+							psd: this.info.pwd
+						}
+						this.Validate(data);
+					} else {
+						this.info.notice = '3';		// 密码错误
+					}
 				} else if(this.info.pwd.length < 8){
 					this.init();
 				}
@@ -149,12 +187,42 @@
 		},
 		methods: {
 			ConfirmSureChose() {
-				this.inputShow = true;
 				this.maskShow = false;
 				this.choose_alert = false;
+				this.inputShow = true;
 			},
 			ConfirmSureRecharge() {
-
+				let data = {
+					jcard: this.info.card,
+					psd: this.info.pwd,
+					phone: this.info.tel
+				};
+				if (this.info.choose == 'bill') {
+					data["type"] = '1';
+				} else if (this.info.choose == 'fuel') {
+					data["type"] = '3';
+					data["card"] = this.info.fuelCard;
+				}
+				CardRecharge().then(res => {
+					this.maskShow = true;
+					this.finish_text = res.message;
+					this.finish_alert = true;
+				}).catch(err => {});
+			},
+			ConfirmInfo() {
+				if (this.info.tel.length == 11 && checkType(this.info.tel, "tel")) {
+					this.maskShow = true;
+					this.recharge_alert = true;
+				} else {
+					this.error_text = '手机号码输入不正确';
+					this.maskShow = true;
+					this.error_alert = true;
+				}
+			},
+			GoRecord() {
+				this.$router.push({
+					name: 'cardRecord'
+				});
 			},
 			Read() {
 				this.maskShow = true;
@@ -164,6 +232,30 @@
 				this.maskShow = false;
 				this.rules_alert = false;
 				this.info.checked = true;
+			},
+			Validate(data) {
+				CardValidate(data).then(res => {
+					if (res.code == '1') {
+						this.info.notice = '1';
+						this.info.type = res.card_type;
+						this.info.worth = res.worth;
+						if (res.type == '1') {				// 话费卡
+							this.info.choose = 'bill';
+							this.inputShow = true;
+						} else if (res.type == '2') {		// 流量卡
+							
+						} else if (res.type == '3') {		// 通用卡
+							this.maskShow = true;
+							this.choose_alert = true;
+						} else if (res.type == '5') {		// 加油卡
+							this.info.choose = 'fuel';
+							this.inputShow = true;
+						}
+					} else {
+						this.info.notice = '2';
+						this.info.noticeText = res.message;
+					}
+				}).catch(err => {});
 			},
 			init() {
 				this.inputShow = false;

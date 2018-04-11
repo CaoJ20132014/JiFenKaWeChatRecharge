@@ -1,26 +1,44 @@
 *{
     margin: 0;
-    padding: 0;
+    padding: 0; 
+    vertical-align: baseline;
+}
+html {
+    font-size: 100%;
+}
+button, input {
+    outline: none;
 }
 li{
     list-style: none;
+}
+input{
+    -webkit-appearance: none;
 }
 /* 卡密充值页面 */
 #Recharge .van-cell-group .van-cell{
     padding-top: 0;
     padding-bottom: 0;
-    line-height: 42px;
+    line-height: 58px;
+}
+#Recharge .van-cell__value{
+    margin-top: 8px;
 }
 #Recharge .top .van-cell-group .van-cell.van-field .van-cell__value .van-field__control{
-    height: 30px;
-    line-height: 30px;
-    margin-top: 7px;
+    height: 50px;
     border: 1px solid #dddddd;
     border-radius: 4px;
-    padding-left: 10px;
+    padding-left: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 0.346667rem;
+    line-height: normal;
+    vertical-align: middle;
 }
 #Recharge .top .van-cell-group .van-cell .van-field__icon{
-    right: 8px;
+    right: 14px;
+    top: 50%;
+    padding: 16px 0px 16px 10px;
 }
 #Recharge .top .van-cell-group .van-cell.van-field .van-cell__title{
     min-width: 1.266667rem;
@@ -34,16 +52,24 @@ li{
     border-bottom-width: 0; 
 }
 
+#Recharge .input .van-cell__value.van-cell__value--alone{
+    margin-top: 8px;
+}
 #Recharge .input .van-cell-group .van-cell.van-field .van-cell__value .van-field__control{
-    height: 30px;
-    line-height: 30px;
-    margin-top: 7px;
+    height: 50px;
     border: 1px solid #dddddd;
     border-radius: 4px;
-    padding-left: 10px;
+    padding-left: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 0.346667rem;
+    line-height: normal;
+    vertical-align: middle;
 }
 #Recharge .input .van-cell-group .van-cell .van-field__icon{
-    right: 8px;
+    right: 14px;
+    top: 50%;
+    padding: 16px 0px 16px 10px;
 }
 #Recharge .input .van-cell-group .van-cell.van-field .van-cell__title{
     min-width: 1.266667rem;
@@ -67,4 +93,8 @@ input.van-field__control:focus {
 }
 .Code .van-field__icon{
     top: 60%;
+}
+/* 单选按钮 */
+.van-radio__label{
+    font-size: .4rem;
 }

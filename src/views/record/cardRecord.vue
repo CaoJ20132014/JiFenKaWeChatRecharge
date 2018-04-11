@@ -9,17 +9,51 @@
 					<div class="right" v-text="item.title"></div>
 				</li>
 			</ul>
+			<p class="title" v-text="data.title"></p>
 		</div>
 		<div class="recordList">
-			<p class="title" v-text="data.title"></p>
 			<div class="list">
-
+				<div class="item" v-for="(item, index) in data.listBill" :key="index">
+					<div class="top">
+						<p><span v-text="item.create_time"></span>&nbsp;&nbsp;<span v-text="item.week"></span></p>
+						<div class="right">
+							<i class="iconfont" :class="item.icon"></i>
+							<span v-text="item.state"></span>
+						</div>
+					</div>
+					<div class="bot">
+						<div class="left">
+							<span>话费</span>
+							<span v-text="item.worth"></span>
+							<span>元&nbsp;&nbsp;充值号码：</span>
+							<span v-text="item.tel"></span>
+						</div>
+					</div>
+				</div>
+				<div class="item" v-for="(item, index) in data.listFuel" :key="index">
+					<div class="top">
+						<p><span v-text="item.create_time"></span>&nbsp;&nbsp;<span v-text="item.week"></span></p>
+						<div class="right">
+							<i class="iconfont" :class="item.icon"></i>
+							<span v-text="item.state"></span>
+						</div>
+					</div>
+					<div class="bot">
+						<div class="left">
+							<span>油卡</span>
+							<span v-text="item.worth"></span>
+							<span>元&nbsp;&nbsp;油卡号码：</span>
+							<span v-text="item.card"></span>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
   	</div>
 </template>
 <script>
-	import Public from '../../until/public/until';
+	import Public from '@/until/public/until';
+	import { CardRecord } from '@/until/http/request';
 	export default {
 		data() {
 			return {
@@ -35,81 +69,63 @@
 					}]
 				},
 				data: {
-					title: '话费账单',
-					arr: [{
-						"id": "1",
-						"title": "充值话费100元",
-						"time": "2017-02-20 星期一",
-						"state": "1"
-					}, {
-						"id": "2",
-						"title": "充值话费50元",
-						"time": "2017-09-30 星期二",
-						"state": "1"
-					}, {
-						"id": "3",
-						"title": "充值话费200元",
-						"time": "2017-12-16 星期三",
-						"state": "1"
-					},{
-						"id": "33",
-						"title": "充值话费200元",
-						"time": "2017-12-21 星期三",
-						"state": "1"
-					}, {
-						"id": "4",
-						"title": "充值话费100元",
-						"time": "2017-10-19 星期一",
-						"state": "1"
-					}, {
-						"id": "5",
-						"title": "充值话费100元",
-						"time": "2017-01-15 星期四",
-						"state": "1"
-					},{
-						"id": "6",
-						"title": "充值话费100元",
-						"time": "2016-08-20 星期六",
-						"state": "1"
-					}, {
-						"id": "7",
-						"title": "充值话费50元",
-						"time": "2016-07-30 星期一",
-						"state": "1"
-					}, {
-						"id": "8",
-						"title": "充值话费200元",
-						"time": "2016-06-16 星期日",
-						"state": "1"
-					}, {
-						"id": "9",
-						"title": "充值话费100元",
-						"time": "2016-10-19 星期二",
-						"state": "1"
-					}, {
-						"id": "10",
-						"title": "充值话费100元",
-						"time": "2016-05-15 星期一",
-						"state": "1"
-					}]
+					title: '卡密话费账单',
+					weeks: new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六") ,
+					type: '1',
+					listBill: [],
+					listFuel: [] 
 				}
 			};
 		},
 		mounted() {
-			
+			let data = {
+				type: this.$route.params.type
+			};
+			this.Get(data);
 		},
 		methods: {
 			QueryBill() {
-				console.log('话费账单');
-				this.data.title = '话费账单';
+				this.data.title = '卡密话费账单';
+				this.data.type = '1';
+				let data = {
+					type: '1'
+				}
+				this.Get(data);
 			},
 			QueryFuel() {
-				console.log('油卡账单');
-				this.data.title = '油卡账单';
+				this.data.title = '卡密油卡账单';
+				this.data.type = '3';
+				let data = {
+					type: '3'
+				}
+				this.Get(data);
+			},
+			Get(data) {
+				CardRecord(data).then(res => {
+					res.list.forEach(item => {
+						item["week"] = this.data.weeks[new Date(item.create_time).getDay()];
+						if(item.state == "充值成功"){
+							item["icon"] = "icon-chenggong";
+						} else if (item.state == "受理成功"){
+							item["icon"] = "icon-jinzhitishi";
+						} else if (item.state == "受理失败"){
+							item["icon"] = "icon-shibai1";
+						}
+					});
+					if (res.code == '1') {
+						if (this.data.type == '1') {
+							this.data.listFuel = [];
+							this.data.listBill = res.list;
+						} else {
+							this.data.listBill = [];
+							this.data.listFuel = res.list;
+						}
+					}
+				}).catch(err => {});
 			}
 		}
 	};
 </script>
 <style lang="less" scoped>
-	@import "../../style/less/record/card.less";
+	@import "../../style/less/record/record.less";
 </style>

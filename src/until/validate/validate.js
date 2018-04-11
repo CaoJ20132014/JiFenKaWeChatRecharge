@@ -24,9 +24,9 @@ export function checkType(str, type) {
 		case 'phone':
 			return /^1[3|4|5|7|8][0-9]{9}$/.test(str);
 		case 'tel':
-			return /^(0\d{2,3}-\d{7,8})(-\d{1,4})?$/.test(str);
+			return /^1[3|4|5|8][0-9]\d{4,8}$/.test(str);
 		case 'number':
-			return /^[0-9]$/.test(str);
+			return /^[0-9]*$/.test(str);
 		case 'english':
 			return /^[a-zA-Z]+$/.test(str);
 		case 'text':

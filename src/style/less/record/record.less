@@ -1,0 +1,97 @@
+@import "../var/var.less";
+#Record{
+    width: 10rem;
+    position: relative;
+    .operate{
+        width: 9.466667rem;
+        padding: @base-pd*3 @base-pd*2 @base-pd*3;
+        background-color: white;
+        position: fixed;
+        top: 0;
+        .operate-ul{
+            display: flex;
+            justify-content: space-between;
+            li{
+                display: flex;
+                width: 2.8rem;
+                height: .933333rem;
+                line-height: .933333rem;
+                border-radius: 4px;
+                border: 1px solid @bc-a0;
+                div.left{
+                    width: .666667rem;
+                    height: 100%;
+                    background-color: @color-purple;
+                    text-align: center;
+                    i.iconfont{
+                        color: white;
+                    }
+                }
+                div.right{
+                    width: 2.133333rem;
+                    height: 100%;
+                    text-align: center;
+                    font-size: @fs-26;
+                    color: @color-purple;
+                }
+            }
+        }
+        .title{
+            font-size: @fs-26;
+            padding-top: @base-pd*2;
+            padding-bottom: @base-pd*2;
+            border-bottom: 1px solid #dddddd;
+        }
+    }
+    .recordList{
+        width: 9.466667rem;
+        padding: @base-pd*2 @base-pd*2 0;
+        background-color: white;
+        margin-top: @base-mg*18;
+        .list{
+            .item{
+                padding-bottom: @base-pd*2;
+                border-bottom: 1px dashed #dddddd;
+                &:last-child{
+                    border-bottom: 0;
+                }
+                .top{
+                    display: flex;
+                    justify-content: space-between;
+                    p{
+                        color: @color-purple;
+                        font-size: .373333rem;
+                        padding: @base-pd*1.5 0;
+                    }
+                    .right{
+                        padding: @base-pd*1.5 0;
+                        .iconfont{
+                            font-size: 12px;
+                        }
+                        .iconfont.icon-chenggong{
+                            color: green;
+                        }
+                        .iconfont.icon-jinzhitishi{
+                            color: orange;
+                            font-weight: 800;
+                        }
+                        .iconfont.icon-shibai1{
+                            color: red;
+                        }
+                    }
+                }
+                .con{
+                    p{
+                        color: @fc-89;
+                        font-size: .32rem;
+                        line-height: .5rem;
+                    }
+                }
+                .bot{
+                    color: @fc-89;
+                    font-size: .32rem;
+                }
+            }
+        }
+    }
+}

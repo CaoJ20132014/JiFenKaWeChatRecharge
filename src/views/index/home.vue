@@ -25,10 +25,12 @@
   	</div>
 </template>
 <script>
-	import card from '../../assets/image/home/icon_wx_menu_1_kmcz.png';
-	import code from '../../assets/image/home/icon_wx_menu_2_smcz.png';
-	import cardRecord from '../../assets/image/home/icon_wx_menu_4_kmzd.png';
-	import codeRecord from '../../assets/image/home/icon_wx_menu_5_smzd.png';
+	const WX = require('weixin-js-sdk');		// 引入weixin-js-sdk
+	import card from '@/assets/image/home/icon_wx_menu_1_kmcz.png';
+	import code from '@/assets/image/home/icon_wx_menu_2_smcz.png';
+	import cardRecord from '@/assets/image/home/icon_wx_menu_4_kmzd.png';
+	import codeRecord from '@/assets/image/home/icon_wx_menu_5_smzd.png';
+	import { GetToken } from '@/until/http/request';
 	export default {
 		data() {
 			return {
@@ -55,7 +57,10 @@
 			}
 		},
 		mounted() {
-
+			let data = {
+				url: "https://a.91jfk.com/weixin/#/"			// 用于获取签名，不能为空，为空的时候会导致签名错误
+			}
+			this.wxInit(data);
 		},
 		methods: {
 			cardRecharge() {
@@ -64,17 +69,45 @@
 				});
 			},
 			codeRecharge() {
-				console.log('扫码充值');
+				WX.scanQRCode({
+					needResult: 0, 						// 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+					scanType: ["qrCode", "barCode"], 	// 可以指定扫二维码还是一维码，默认二者都有
+					success: function(res) {
+						var result = res.resultStr; 	// 当needResult 为 1 时，扫码返回的结果
+					}
+				});
 			},
 			cardRecord() {
 				this.$router.push({
-					name: 'cardRecord'
+					name: 'cardRecord',
+					params: {
+						type: '1'
+					}
 				});
 			},
 			codeRecord() {
 				this.$router.push({
-					name: 'codeRecord'
+					name: 'codeRecord',
+					params: {
+						type: '1'
+					}
 				});
+			},
+			wxInit(data) {
+				GetToken(data).then(res => {
+					if (res.code == '1') {
+						WX.config({
+							debug: false,
+							appId: res.list.appId,
+							timestamp: res.list.timestamp,
+							nonceStr: res.list.nonceStr,
+							signature: res.list.signature,
+							jsApiList: [
+								'scanQRCode'
+							]
+						});
+					}
+				}).catch(err => {});
 			}
 		}
 	};
