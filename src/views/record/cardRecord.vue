@@ -102,17 +102,22 @@
 			},
 			Get(data) {
 				CardRecord(data).then(res => {
-					res.list.forEach(item => {
-						item["week"] = this.data.weeks[new Date(item.create_time).getDay()];
-						if(item.state == "充值成功"){
-							item["icon"] = "icon-chenggong";
-						} else if (item.state == "受理成功"){
-							item["icon"] = "icon-jinzhitishi";
-						} else if (item.state == "受理失败"){
+					if (res.code == '1') {
+						res.list.sort((a, b) => {
+							return a.create_time < b.create_time;
+						});
+						res.list.forEach(item => {
+							item["week"] = this.data.weeks[new Date(item.create_time).getDay()];
+							if(item.state == "充值成功"){
+								item["icon"] = "icon-chenggong";
+							} else if (item.state == "受理成功"){
+								item["icon"] = "icon-jinzhitishi";
+							} else if (item.state == "受理失败"){
+								item["icon"] = "icon-shibai1";
+							} else if (item.state == "充值失败"){
 							item["icon"] = "icon-shibai1";
 						}
-					});
-					if (res.code == '1') {
+						});
 						if (this.data.type == '1') {
 							this.data.listFuel = [];
 							this.data.listBill = res.list;
