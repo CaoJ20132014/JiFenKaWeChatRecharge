@@ -24,7 +24,7 @@
 			</div>
 			<div class="relus">
 				<van-checkbox v-model="info.checked">我已阅读并同意</van-checkbox>
-				<span style="color: #a062e0;" @click="Read">《充值协议》</span>
+				<span style="color: #a062e0;vertical-align: top;" @click="Read">《充值协议》</span>
 			</div>
 			<van-button :class="info.checked ? 'bg' : ''" :disabled="info.checked ? false : true" size="large" @click="ConfirmInfo">确定</van-button>
 		</div>
@@ -152,7 +152,7 @@
 				inputShow: false,		// 显示下面的信息输入框
 				error_alert: false,		// 错误信息提示框
 				error_text: '',			// 错误信息
-				finish_alert: '',		// 充值完成弹框
+				finish_alert: false,	// 充值完成弹框
 				finish_text: '',		// 充值完成信息
 				rules_alert: false		// 充值规则弹框
 			}
@@ -183,7 +183,7 @@
 			}
 		},
 		mounted() {
-			
+
 		},
 		methods: {
 			ConfirmSureChose() {
@@ -195,7 +195,8 @@
 				let data = {
 					jcard: this.info.card,
 					psd: this.info.pwd,
-					phone: this.info.tel
+					phone: this.info.tel,
+					name: this.info.name
 				};
 				if (this.info.choose == 'bill') {
 					data["type"] = '1';
@@ -235,7 +236,11 @@
 			},
 			Validate(data) {
 				CardValidate(data).then(res => {
-					if (res.code == '1') {
+					if (response.code == '301') {			// 未激活
+						_that.$router.push({
+							name: 'notActive'
+						});
+					} else if (response.code == '302') {	// 正常
 						this.info.notice = '1';
 						this.info.type = res.card_type;
 						this.info.worth = res.worth;
@@ -243,7 +248,7 @@
 							this.info.choose = 'bill';
 							this.inputShow = true;
 						} else if (res.type == '2') {		// 流量卡
-							
+
 						} else if (res.type == '3') {		// 通用卡
 							this.maskShow = true;
 							this.choose_alert = true;
@@ -251,6 +256,23 @@
 							this.info.choose = 'fuel';
 							this.inputShow = true;
 						}
+					} else if (response.code == '303') {	// 已经使用过了
+						_that.$router.push({
+							name: 'alreadyUsed',
+							params: {
+								cardid: data.cardid,
+								pass: data.pass,
+								type: data.type
+							}
+						});
+					} else if (response.code == '304') {	// 过期
+						_that.$router.push({
+							name: 'overdue'
+						});
+					} else if (response.code == '305') {	// 冻结
+						_that.$router.push({
+							name: 'freeze'
+						});
 					} else {
 						this.info.notice = '2';
 						this.info.noticeText = res.message;

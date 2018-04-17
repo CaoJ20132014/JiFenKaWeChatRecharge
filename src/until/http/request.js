@@ -21,3 +21,15 @@ export const CardRecord = data => fetch(url.cardRecord, data, 'GET');
 * 扫码充值记录
 */
 export const CodeRecord = data => fetch(url.codeRecord, data, 'GET');
+/*
+* 扫码充值卡片验证
+*/
+export const CodeValidate = data => fetch(url.codeJudge, data, 'POST');
+/*
+* 扫码充值卡片确认充值
+*/
+export const CodeRecharge = data => fetch(url.codeRecharge, data, 'POST');
+/*
+* 是否维护
+*/
+export const CheckMaintain = data => fetch(url.checkMaintain, data, 'POST');

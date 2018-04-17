@@ -15,7 +15,7 @@ module.exports = {
 				}
 			}
 		},
-		host: '192.168.10.136',
+		host: '192.168.10.137',
 		port: 8888,
 		autoOpenBrowser: true,
 		errorOverlay: true,
@@ -30,7 +30,7 @@ module.exports = {
 		assetsRoot: path.resolve(__dirname, '../dist'),
 		assetsSubDirectory: 'static',
 		assetsPublicPath: './',
-		productionSourceMap: true,
+		productionSourceMap: false,
 		devtool: '#source-map',
 		productionGzip: false,
 		productionGzipExtensions: ['js', 'css'],

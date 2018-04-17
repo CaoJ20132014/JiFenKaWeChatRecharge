@@ -1,6 +1,5 @@
 <template>
     <div class="BOX">
-        <h3>集分卡充值中心</h3>
         <div class="inside">
             <img src="../../assets/image/error/404.png" alt="">
             <div class="right">
@@ -38,12 +37,6 @@
     .BOX{
         width: 10rem;
         height: 100%;
-        h3{
-            padding: .266667rem 0;
-            text-align: center;
-            color: white;
-            background-color: #a062e0;
-        }
         .inside{
             width: 8rem;
             height: 3.133333rem;

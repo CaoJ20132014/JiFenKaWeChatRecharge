@@ -20,14 +20,8 @@
 					<span>元</span>
 				</div>
 				<div class="input">
-					<p class="info">
-						<span>集分卡号：</span>
-						<span v-text="info.card"></span>
-					</p>
-					<p class="info">
-						<span>有效日期：</span>
-						<span v-text="info.time"></span>
-					</p>
+					<p class="info">集分卡号：{{info.card}}</p>
+					<p class="info">有效日期：{{info.time}}</p>
 					<van-cell-group>
 						<van-field v-if="info.choose == 'fuel'" v-model="info.name" icon="close" placeholder="请输入姓名" @click-icon="info.name = ''" />
 						<p v-if="info.choose == 'bill'">温馨提示：17开头的号段暂不支持充值。</p>
@@ -40,16 +34,12 @@
 				</div>
 				<div class="relus">
 					<van-checkbox v-model="info.checked">我已阅读并同意</van-checkbox>
-					<span style="color: #a062e0;" @click="Read">《充值协议》</span>
+					<span style="color: #a062e0;vertical-align: top;" @click="Read">《充值协议》</span>
 				</div>
 				<button class="confirm">立即充值</button>
 			</div>
 		</div>
-		<div class="bot" :style="styles1">
-			<img :style="styles2" src="../../assets/image/recharge/saosao.png" alt="">
-			<p>扫一扫，有惊喜</p>
-			<p>客服电话：0571-86572999</p>
-		</div>
+		<div class="bot"></div>
 		<div v-show="maskShow" class="mask"></div>
 		<transition name="van-fade">
 			<div v-show="choose_alert" class="choose-alert">
@@ -130,38 +120,38 @@
   	</div>
 </template>
 <script>
+	import { CodeValidate, CodeRecharge } from '@/until/http/request';
 	export default {
 		data() {
 			return {
 				info: {
-					card: '12121221212',			// 充值卡卡号
-					pwd: '',			// 充值卡密码
-					typeCn: '通用',		// 充值卡类型，通用、话费、油卡
-					typeEn: 'CURRENCY',	// 充值卡类型，通用、话费、油卡
-					worth: '100',		// 充值卡面值
-					name: '',			// 用户姓名
-					tel: '',			// 用户手机号码
-					fuelCard: '',		// 加油卡卡号
-					checked: '',		// 是否阅读充值协议
-					time: '2020-12-31',			// 有效日期
-					choose: 'fuel',		// 用户选择充值类型，bill话费，fuel油卡
-					notice: '1'			// 1正确，2卡号错误，3密码错误
+					card: '',						// 充值卡卡号
+					pwd: '',			            // 充值卡密码
+					typeCn: '',		          		// 充值卡类型，通用、话费、油卡
+					typeEn: '',	               		// 充值卡类型，通用、话费、油卡
+					worth: '',		                // 充值卡面值
+					name: '',			            // 用户姓名
+					tel: '',			            // 用户手机号码
+					fuelCard: '',		            // 加油卡卡号
+					checked: '',		            // 是否阅读充值协议
+					time: '',			    		// 有效日期
+					choose: 'bill',		            // 用户选择充值类型，bill话费，fuel油卡
 				},
 				choose_alert: false,
 				recharge_alert: false,
 				maskShow: false,
-				rules_alert: false,
-				styles1: {
-					"height": 477 + 'px'
-				},
-				styles2: {
-					"margin-top": 300 + 'px'
-				}
+				rules_alert: false
 			};
 		},
 		mounted() {
-			this.styles1.height = this.$refs.input.clientHeight + 170 + 'px';
-			this.styles2['margin-top'] = this.$refs.input.clientHeight + 'px';
+			let data = {
+				type: this.$route.params.type,
+				pass: this.$route.params.pass,
+				cardid: this.$route.params.cardid
+			}
+			this.info.card = this.$route.params.cardid;
+			this.Judge(this.$route.params.type);
+			this.Validate(data);
 		},
 		methods: {
 			ConfirmSureChose() {
@@ -170,7 +160,23 @@
 				this.choose_alert = false;
 			},
 			ConfirmSureRecharge() {
-
+				let data = {
+					cardid: this.info.card,
+					psd: this.info.pwd,
+					phone: this.info.tel
+				};
+				if (this.info.choose == 'bill') {
+					data["type"] = '1';
+				} else if (this.info.choose == 'fuel') {
+					data["type"] = '3';
+					data["card"] = this.info.fuelCard;
+					data["name"] = this.info.name;
+				}
+				CodeRecharge(data).then(res => {
+					this.maskShow = true;
+					this.finish_text = res.message;
+					this.finish_alert = true;
+				}).catch(err => {});
 			},
 			Read() {
 				this.maskShow = true;
@@ -180,6 +186,26 @@
 				this.maskShow = false;
 				this.rules_alert = false;
 				this.info.checked = true;
+			},
+			Judge(type) {
+				if (type == '1') {
+					this.info.choose = 'bill';
+					this.info.typeCn = '话费';
+					this.info.typeEn = 'BILL';
+				} else if (type == '3') {
+					this.maskShow = true;
+					this.choose_alert = true;
+					this.info.choose = '';
+					this.info.typeCn = '通用';
+					this.info.typeEn = 'CURRENCY';
+				}
+			},
+			Validate(data) {
+				CodeValidate(data).then(respose => {
+					if (response.code == '302') {	// 正常
+						
+					}
+				}).catch(error => {});
 			}
 		}
 	};

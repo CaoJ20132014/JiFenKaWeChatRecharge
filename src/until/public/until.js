@@ -1,8 +1,8 @@
 /*
- * @Author: CaoJ_20132014 
- * @Date: 2018-02-01 09:01:39 
+ * @Author: CaoJ_20132014
+ * @Date: 2018-02-01 09:01:39
  * @Last Modified by: CaoJ_20132014
- * @Last Modified time: 2018-04-05 12:34:19
+ * @Last Modified time: 2018-04-16 14:04:31
  */
 // import Cookie from 'js-cookie';
 const PublicMethod = {
@@ -89,6 +89,24 @@ const PublicMethod = {
         return time_str;
     },
     /**
+     * @desc 获取地址中的查询参数，输出对象
+     * @param {url} 地址连接（可不传，即为当前地址）
+     */
+    getQueryParam: (url) => {
+        url = url == null ? window.location.href : url;
+        const search = url.substring(url.lastIndexOf('?') + 1);
+        const queryObj = {};
+        const reg = /([^?&=]+)=([^?&=]*)/g;
+        search.replace(reg, (rs, $1, $2) => {
+            const name = decodeURIComponent($1);
+            let val = decodeURIComponent($2);
+            val = String(val);
+            queryObj[name] = val;
+            return rs;
+        });
+        return queryObj;
+    },
+    /**
      * @desc 判断字符1是否包含字符串2
      * @param {str1, str1} str1：字符串；str2：被包含的字符串
      * @returns 如果通过验证返回true,否则返回false
@@ -141,6 +159,35 @@ const PublicMethod = {
             }
         }
         return result;
+    },
+    /**
+     * @desc 判断移动端手机是IOS还是Android
+	 * @returns {string} Android或者ISO
+     */
+    judgePhone: () => {
+        if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+            return "IOS";
+        } else if (/(Android)/i.test(navigator.userAgent)) {
+            return "Android";
+        };
+    },
+    /**
+     * @desc 根据手机号判断运营商
+	 * @returns {string} YD 移动 LT联通 DX电信
+     */
+    yunyingshang: (phone) => {
+        let CMCC = /(^((13[4-9]{1})|(147)|(15[0-2]{1})|(15[7-9]{1})|(178)|(18[2-4]{1})|(18[7-8]{1}))\d{8}$)|(^((1703)|(1705)|(1706))\d{7}$)/;//中国移动  
+        let CUCC = /(^((13[0-2]{1})|(145)|(155)|(156)|(171)|(175)|(176)|(185)|(186))\d{8}$)|(^(170[7-9]{1})\d{7}$)/;//中国联通  
+        let CTCC = /(^((133)|(149)|(153)|(173)|(177)|(180)|(181)|(189)|(199))\d{8}$)|(^(170[0-2]{1})\d{7}&)/;//中国电信  
+        if (CMCC.test(phone)) {
+            phoneType = "YD";
+        }
+        else if (CUCC.test(phone)) {
+            phoneType = "LT";
+        }
+        else if (CTCC.test(phone)) {
+            phoneType = "DX";
+        } 
     }
 }
 export default PublicMethod;

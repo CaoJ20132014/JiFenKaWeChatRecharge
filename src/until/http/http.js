@@ -25,7 +25,6 @@ Axios.interceptors.request.use(
 Axios.interceptors.response.use(
     response => {
         if (response) {
-            // console.log(response);
             // if (response.data.code == 430) {
             //     // 430登录过期、账号未登录、其他地方登陆
             //     MessageBox.confirm(response.data.message, '消息提示', {
@@ -54,21 +53,21 @@ Axios.interceptors.response.use(
     },
     error => {
         if (error.response) {
-            // if (error.response.status == 404) {
-            //     Route.replace({
-            //         path: '/error404',
-            //         query: {
-            //             redirect: Route.currentRoute.fullPath
-            //         }
-            //     });
-            // } else if (error.response.status == 500) {
-            //     Route.replace({
-            //         path: '/error500',
-            //         query: {
-            //             redirect: Route.currentRoute.fullPath
-            //         }
-            //     });
-            // }
+            if (error.response.status == 404) {
+                Route.replace({
+                    path: '/error404',
+                    query: {
+                        redirect: Route.currentRoute.fullPath
+                    }
+                });
+            } else if (error.response.status == 500) {
+                Route.replace({
+                    path: '/error500',
+                    query: {
+                        redirect: Route.currentRoute.fullPath
+                    }
+                });
+            }
         }
         return Promise.reject(error.response.data);
     }

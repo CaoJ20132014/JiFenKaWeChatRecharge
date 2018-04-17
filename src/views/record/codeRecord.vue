@@ -15,7 +15,7 @@
 			<div class="list">
 				<div class="item" v-for="(item, index) in data.listBill" :key="index">
 					<div class="top">
-						<p><span v-text="item.create_time"></span>&nbsp;&nbsp;<span v-text="item.week"></span></p>
+						<p><span v-text="item.create_time"></span>&nbsp;&nbsp;<span v-text="item.weekDay"></span></p>
 						<div class="right">
 							<i class="iconfont" :class="item.icon"></i>
 							<span v-text="item.state"></span>
@@ -38,7 +38,7 @@
 				</div>
 				<div class="item" v-for="(item, index) in data.listFuel" :key="index">
 					<div class="top">
-						<p><span v-text="item.create_time"></span>&nbsp;&nbsp;<span v-text="item.week"></span></p>
+						<p><span v-text="item.create_time"></span>&nbsp;&nbsp;<span v-text="item.weekDay"></span></p>
 						<div class="right">
 							<i class="iconfont" :class="item.icon"></i>
 							<span v-text="item.state"></span>
@@ -85,7 +85,7 @@
 					weeks: new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六") ,
 					type: '1',
 					listBill: [],
-					listFuel: [] 
+					listFuel: []
 				}
 			};
 		},
@@ -115,32 +115,44 @@
 			Get(data) {
 				CodeRecord(data).then(res => {
 					if (res.code == '1') {
-						res.list.sort((a, b) => {
-							return a.create_time < b.create_time;
-						});
-						res.list.forEach(item => {
-							item["week"] = this.data.weeks[new Date(item.create_time).getDay()];
-							item["worth"] = item.worth.slice(0, item.worth.indexOf("."));
-							if(item.state == "充值成功"){
-								item["icon"] = "icon-chenggong";
-							} else if (item.state == "受理成功"){
-								item["icon"] = "icon-jinzhitishi";
-							} else if (item.state == "受理失败"){
-								item["icon"] = "icon-shibai1";
-							} else if (item.state == "充值失败"){
-								item["icon"] = "icon-shibai1";
-							}
-						});
-						if (this.data.type == '1') {
-							this.data.listFuel = [];
-							this.data.listBill = res.list;
-						} else {
-							this.data.listBill = [];
-							this.data.listFuel = res.list;
-						}
+						this.DataHandle(res.list);
+					} else {
+						this.data.listFuel = [];
+						this.data.listBill = [];
 					}
 				}).catch(err => {});
-			}
+			},
+            DataHandle(params) {
+                params.sort((a, b) => {
+                    return a.create_time < b.create_time;
+                });
+                params.forEach(item => {
+                    item["worth"] = item.worth.slice(0, item.worth.indexOf("."));
+                    if (Public.judgePhone() === "IOS") {
+                        item["weekDay"] = this.data.weeks[new Date(item.create_time.slice(0, 10).replace(/-/g,'/')).getDay()];
+                    } else if (Public.judgePhone() === "Android") {
+                        item["weekDay"] = this.data.weeks[new Date(item.create_time).getDay()];
+                    } else {
+                        item["weekDay"] = this.data.weeks[new Date(item.create_time).getDay()];
+                    };
+                    if(item.state == "充值成功"){
+                        item["icon"] = "icon-chenggong";
+                    } else if (item.state == "受理成功"){
+                        item["icon"] = "icon-jinzhitishi";
+                    } else if (item.state == "受理失败"){
+                        item["icon"] = "icon-shibai1";
+                    } else if (item.state == "充值失败"){
+                        item["icon"] = "icon-shibai1";
+                    }
+                });
+                if (this.data.type == '1') {
+                    this.data.listFuel = [];
+                    this.data.listBill = params;
+                } else if (this.data.type == '3') {
+                    this.data.listBill = [];
+                    this.data.listFuel = params;
+                }
+            }
 		}
 	};
 </script>
